@@ -1,6 +1,3 @@
-// Simple Particle System
-// Daniel Shiffman <http://www.shiffman.net>
-
 // A simple Particle class
 SinOsc sine;
 class Particle {
@@ -8,6 +5,8 @@ class Particle {
   PVector velocity;
   PVector acceleration;
   float lifespan;
+  color [] randColors = {#69D2E7,#A7DBD8,#E0E4CC,#F38630,#FA6900,#FF4E50,#F9D423};
+
   Particle(PVector l) {
     acceleration = new PVector(0,0);
     //velocity = new PVector(random(-1,1),random(-2,0));
@@ -32,18 +31,14 @@ class Particle {
   // Method to display
   void display() {
     stroke(0,lifespan);
-    //strokeWeight(2);
     noStroke();
     for (int i = 0; i < 80; i++) {
     int d = 1 + (i);
     
     noStroke();
-    fill(127, lifespan);
-    //    print("d:" + d + " ");
-    //    print("alpha:" + alpha + " ");
-    
+    fill(0,220,220, lifespan);
     ellipse(location.x, location.y, d/5, d*2);
-    fill(100,lifespan);
+    fill(0,244,244,lifespan);
     ellipse(location.x, location.y, d/10, d);
     //fill(127,lifespan);
     //ellipse(location.x,location.y,12,55);

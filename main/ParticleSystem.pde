@@ -1,11 +1,4 @@
-// Simple Particle System
-// Daniel Shiffman <http://www.shiffman.net>
-
-// A class to describe a group of Particles
-// An ArrayList is used to manage the list of Particles 
-import java.util.Iterator;
 class ParticleSystem {
-
   ArrayList<Particle> particles;    // An arraylist for all the particles
   PVector origin;        // An origin point for where particles are birthed
 
