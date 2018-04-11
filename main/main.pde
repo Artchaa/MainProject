@@ -7,7 +7,7 @@ import processing.sound.*;
 
   
 void setup(){
-  size (800,800);
+  size (1600,800,P2D);
   smooth();
   systems = new ArrayList<ParticleSystem>();
   background(255);
@@ -21,6 +21,7 @@ void draw(){
   background(255);  
   for (ParticleSystem ps: systems) {
     ps.run();
+    //filter(BLUR,10);
     //sine =  new SinOsc(this);
     //sine.play();
     //ps.addParticle(); 

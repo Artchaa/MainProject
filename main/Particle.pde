@@ -14,7 +14,7 @@ class Particle {
     
     velocity = new PVector(0,0);
     location = l.copy();
-    lifespan = 255.0;
+    lifespan = 156.0;
   }
 
   void run() {
@@ -26,7 +26,7 @@ class Particle {
   void update() {
     velocity.add(acceleration);
     location.add(velocity);
-    lifespan -= 2.0;
+    lifespan -= 1.6;
   }
 
   // Method to display
@@ -34,10 +34,25 @@ class Particle {
     stroke(0,lifespan);
     //strokeWeight(2);
     noStroke();
-    fill(127,lifespan);
-    ellipse(location.x,location.y,12,65);
+    for (int i = 0; i < 80; i++) {
+    int d = 1 + (i);
+    
+    noStroke();
+    fill(127, lifespan);
+    //    print("d:" + d + " ");
+    //    print("alpha:" + alpha + " ");
+    
+    ellipse(location.x, location.y, d/5, d*2);
     fill(100,lifespan);
-    ellipse(location.x,location.y,14,85);
+    ellipse(location.x, location.y, d/10, d);
+    //fill(127,lifespan);
+    //ellipse(location.x,location.y,12,55);
+    //fill(100,lifespan);
+    //ellipse(location.x,location.y,14,85);
+    //fill(80,lifespan);
+    //ellipse(location.x,location.y,18,115);
+    }
+
   }
   
   // Is the particle still useful?
