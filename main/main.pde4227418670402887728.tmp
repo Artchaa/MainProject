@@ -41,8 +41,8 @@ void draw() {
     }
     yoff += inc;
   }
-  zoff += 0.04;
-  fill(255,30);
+  zoff += 0.01;
+  fill(255,8);
   rect(0,0,width,height);
   //clear();
   for (ParticleSystem ps : systems) {
