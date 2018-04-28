@@ -9,9 +9,10 @@ class Particle {
 
   Particle(PVector l) {
     acceleration = new PVector(0, 0);
-    velocity = new PVector(random(-1,1),random(0,2));
-    acceleration = new PVector(0,-.1);
+    velocity = new PVector(random(-1,1),random(-1,1));
+    //acceleration = new PVector(random(-.1,.1),random(-.1,.1));
 
+    acceleration = new PVector(0,0);
     //velocity = new PVector(0, 0);
     location = l.copy();
     lifespan = 156.0;
@@ -39,14 +40,11 @@ class Particle {
       noStroke();
       fill(0, 220, 255, lifespan);
       ellipse(location.x, location.y, d/2, d/2);
-      //fill(0, 244, 244, lifespan);
-      //ellipse(location.x, location.y, d/10, d);
-      //fill(127,lifespan);
-      //ellipse(location.x,location.y,12,55);
-      //fill(100,lifespan);
-      //ellipse(location.x,location.y,14,85);
-      //fill(80,lifespan);
-      //ellipse(location.x,location.y,18,115);
+    if (location.x <0){ location.x = width;}
+    if (location.x >width){ location.x = 0;}
+    if (location.y <0){ location.y = height;}
+    if (location.y >height){ location.y = 0;}
+    
     }
   }
 
