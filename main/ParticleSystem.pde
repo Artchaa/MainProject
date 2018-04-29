@@ -16,13 +16,15 @@ class ParticleSystem {
     while (it.hasNext()) {
       Particle p = it.next();
       p.run();
-      if (p.isDead()) {
+      if(p.isDead()) {
         it.remove();
       }
     }
   }
 
+
   void addParticle() {
+    PVector f = PVector.fromAngle(0);
     particles.add(new Particle(origin));
   }
 
