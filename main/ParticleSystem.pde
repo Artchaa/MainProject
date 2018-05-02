@@ -24,7 +24,6 @@ class ParticleSystem {
 
 
   void addParticle() {
-    PVector f = PVector.fromAngle(0);
     particles.add(new Particle(origin));
   }
 

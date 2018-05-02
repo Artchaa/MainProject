@@ -1,6 +1,7 @@
 // A simple Particle class
 //SinOsc sine;
 class Particle {
+  PVector prevLocation;
   PVector location;
   PVector velocity;
   PVector acceleration;
@@ -13,59 +14,76 @@ class Particle {
     velocity     = new PVector(0, 0);
     acceleration = new PVector(0, 0);
     location     = l.copy();
-    lifespan     = 135.0;
+    location     = new PVector (random(width), random(height));
+    prevLocation = location.copy();
+    lifespan     = 1350.0;
   }
 
   void run() {
-    update();
     display();
+    update();
   }
 
 
   // Method to update location
   void update() {
+    prevLocation = location.copy();
+
+    //acceleration.add(force);
+    acceleration = force;
     velocity.add(acceleration);
+    velocity.limit(10);
     location.add(velocity);
-    lifespan -= 1;
+    lifespan -= 2;
   }
 
   // Method to display - tiny circles.
   void display() {
-    stroke(0, lifespan);
-    noStroke();
-    int d = 10;
-    noStroke();
-    fill(0, 0, 255, lifespan);
-    ellipse(location.x, location.y, d, d);
     if (location.x <0) {
       location.x = width;
+      prevLocation = location;
     }
     if (location.x >width) {
       location.x = 0;
+      prevLocation = location;
     }
     if (location.y <0) {
-      location.y = height;
+      location.y = 0;
+      prevLocation = location;
     }
     if (location.y >height) {
-      location.y = 0;
+      location.y = height;
+      prevLocation = location;
     }
+    
+    //stroke(0, lifespan);
+    //int d = 10;
+    stroke(25,225,255,lifespan);
+    strokeWeight(10);
+    //fill(96, 186, 215, lifespan);
+    //ellipse(location.x, location.y, d/8, d/8);
+    //line(prevLocation.x,prevLocation.y,location.x,location.y);
+    line(location.x,location.y,prevLocation.x,prevLocation.y);
 
     int x     = floor(location.x/scl);
     int y     = floor(location.y/scl);
     int temp  = cols;
     int index = x + y * temp;
     force     = flowfield[index];
-    force.setMag(.1);
-    acceleration.add(force);
-}
-
-// Is the particle still useful?
-boolean isDead() {
-  if (lifespan <= 0.0) {
-    return true;
-  } else {
-    return false;
+  force.setMag(2);
   }
-}
 
+  void updatePrev() {
+    prevLocation = location;
+  }
+
+
+  // Is the particle still useful?
+  boolean isDead() {
+    if (lifespan <= 0.0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
