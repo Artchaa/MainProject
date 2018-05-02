@@ -58,8 +58,9 @@ class Particle {
     
     //stroke(0, lifespan);
     //int d = 10;
-    stroke(25,225,255,lifespan);
-    strokeWeight(10);
+    //stroke(255,25*velocity.mag(),25*velocity.mag(),lifespan);
+    stroke(255,25*velocity.x,25*velocity.y,lifespan);
+    strokeWeight(5);
     //fill(96, 186, 215, lifespan);
     //ellipse(location.x, location.y, d/8, d/8);
     //line(prevLocation.x,prevLocation.y,location.x,location.y);
