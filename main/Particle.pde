@@ -71,7 +71,7 @@ class Particle {
     int temp  = cols;
     int index = x + y * temp;
     force     = flowfield[index];
-  force.setMag(2);
+  force.setMag(1);
   }
 
   void updatePrev() {
