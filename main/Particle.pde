@@ -16,7 +16,7 @@ class Particle {
     location     = l.copy();
     location     = new PVector (random(width), random(height));
     prevLocation = location.copy();
-    lifespan     = 1350.0;
+    lifespan     = 135.0;
   }
 
   void run() {
@@ -32,7 +32,7 @@ class Particle {
     //acceleration.add(force);
     acceleration = force;
     velocity.add(acceleration);
-    velocity.limit(10);
+    //velocity.limit(10);
     location.add(velocity);
     lifespan -= 2;
   }
@@ -60,7 +60,7 @@ class Particle {
     //int d = 10;
     //stroke(255,25*velocity.mag(),25*velocity.mag(),lifespan);
     stroke(255,25*velocity.x,25*velocity.y,lifespan);
-    strokeWeight(5);
+    strokeWeight(2);
     //fill(96, 186, 215, lifespan);
     //ellipse(location.x, location.y, d/8, d/8);
     //line(prevLocation.x,prevLocation.y,location.x,location.y);
@@ -71,7 +71,7 @@ class Particle {
     int temp  = cols;
     int index = x + y * temp;
     force     = flowfield[index];
-  force.setMag(1);
+  //force.setMag(1);
   }
 
   void updatePrev() {
