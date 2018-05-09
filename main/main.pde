@@ -25,18 +25,10 @@ void setup() {
   zoomDuration = 1000;
   zoomStart = -zoomDuration;
 
-
-  float lat = -90;
-  float lon =-181;
-  if (lat >= -90 && lat <= 90 && lon >=-180 && lon <= 180) {
-    openData = loadJSONObject("http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=a2d6cd4e138f25e8b9e0cf1c7ad377f0&units=metric");  
-    JSONObject wind = openData.getJSONObject("wind");
-    float deg = wind.getFloat("deg");
-    float speed = wind.getFloat("speed");
-    println(deg+" " + speed);
-  } else {
-    println("invalid lat lon");
-  }
+  //JSONObject wind = openData.getJSONObject("wind");
+  //float deg = wind.getFloat("deg");
+  //float speed = wind.getFloat("speed");
+  //println(deg+" " + speed);
 
   frameRate(60);
   colorMode(RGB, 255);
@@ -47,17 +39,30 @@ void setup() {
   cols = floor(width/scl);
   rows = floor(height/scl);
   flowfield = new PVector[(cols+1) * (rows+1)];
+  float lat=23;
+  float lon=24;
+  //float yoff = 0;
 
-  float yoff = 0;
-  for (int y = 0; y <= rows; y++) {
-    float xoff = 0;
-    for ( int x = 0; x <= cols; x++) {
+  for (int y = 0; y <= cols; y++) {
+    //float xoff = 0;
+    lat = y;
+    lat = map(lat, 0, floor(height/scl), 46, 33);
+    for ( int x = 0; x <= rows; x++) {
       int index = x + y * cols;
-      float angle = noise(xoff, yoff, zoff)*TWO_PI*2;
+      lon =  x;
+      lon = map(lon, 0, floor(width/scl), 110, 120);
+      //println("lon " + lon +" lat "+ lat);
+      openData = loadJSONObject("http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&appid=a2d6cd4e138f25e8b9e0cf1c7ad377f0&units=metric"); 
+      JSONObject wind = openData.getJSONObject("wind");
+      float deg = wind.getFloat("deg");
+      float speed = wind.getFloat("speed");
+      //println(deg+" " + speed);
+      
+      float angle = radians(deg);
       v = PVector.fromAngle(angle);
-      v.setMag(100*noise(x, y));
+      v.setMag(speed/10);
       flowfield [index] = v.copy();
-      xoff += inc;
+      //xoff += inc;
       stroke(0, 50);
       pushMatrix();
       translate(x*scl, y*scl);
@@ -66,10 +71,8 @@ void setup() {
       line(0, 0, v.x, v.y);
       popMatrix();
     }
-    yoff += inc;
+    //yoff += inc;
   }
-  xLoc = 0;
-  yLoc = 0;
 }
 
 
@@ -77,31 +80,29 @@ void draw() {
 
   fill(0, 20);
   noStroke();
-  scale(zoomValue);
-  translate(xLoc, yLoc);
   rect(0, 0, width, height);
 
-  float yoff = 0;
-  for (int y = 0; y <= rows; y++) {
-    float xoff = 0;
-    for ( int x = 0; x <= cols; x++) {
-      int index = x + y * cols;
-      float angle = noise(xoff, yoff, zoff)*TWO_PI*2;
-      v = PVector.fromAngle(angle);
-      v.setMag(100*noise(x, y));
-      flowfield [index] = v.copy();
-      xoff += inc;
-      stroke(0, 50);
-      pushMatrix();
-      translate(x*scl, y*scl);
-      rotate(v.heading());
-      stroke(255);
-      line(0, 0, v.mag(), 0);
-      popMatrix();
-    }
-    yoff += inc;
-  }
-  //zoff += 0.01;
+  //float yoff = 0;
+  //for (int y = 0; y <= rows; y++) {
+  //  float xoff = 0;
+  //  for ( int x = 0; x <= cols; x++) {
+  //    int index = x + y * cols;
+  //    float angle = noise(xoff, yoff, zoff)*TWO_PI*2;
+  //    v = PVector.fromAngle(angle);
+  //    v.setMag(100*noise(x, y));
+  //    flowfield [index] = v.copy();
+  //    xoff += inc;
+  //    stroke(0, 50);
+  //    pushMatrix();
+  //    translate(x*scl, y*scl);
+  //    rotate(v.heading());
+  //    stroke(255);
+  //    line(0, 0, v.mag(), 0);
+  //    popMatrix();
+  //  }
+  //  yoff += inc;
+  //}
+  ////zoff += 0.01;
   for (ParticleSystem ps : systems) {
     ps.run();
   }
@@ -111,27 +112,27 @@ void draw() {
   systems.add(new ParticleSystem(1, new PVector(locX, locY)));
 }
 
-float zoomState() {
-  float elapsed = millis() - zoomStart; // check timer
-  if (elapsed < zoomDuration) { // don't zoom past 100% duration
-    return lerp(zoomFrom, zoomTo, elapsed/zoomDuration); // zoom based on elapsed time
-  } else {
-    return zoomTo;
-  }
-}
+//float zoomState() {
+//  float elapsed = millis() - zoomStart; // check timer
+//  if (elapsed < zoomDuration) { // don't zoom past 100% duration
+//    return lerp(zoomFrom, zoomTo, elapsed/zoomDuration); // zoom based on elapsed time
+//  } else {
+//    return zoomTo;
+//  }
+//}
 
 
 
-void mouseClicked() {
-  if (mouseButton == LEFT) {
-    if (zoomState() == zoomTo) { // act only if we are not already mid-zoom
-      float tmp = zoomFrom; 
-      zoomFrom = zoomTo; 
-      zoomTo = tmp; // swap values
-      zoomStart = millis(); // start timer
-    }
-  }
-}
+//void mouseClicked() {
+//  if (mouseButton == LEFT) {
+//    if (zoomState() == zoomTo) { // act only if we are not already mid-zoom
+//      float tmp = zoomFrom; 
+//      zoomFrom = zoomTo; 
+//      zoomTo = tmp; // swap values
+//      zoomStart = millis(); // start timer
+//    }
+//  }
+//}
 
 void keyPressed() {
   if (key == CODED) {
