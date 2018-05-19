@@ -24,33 +24,10 @@ void setup() {
   frameRate(60);
   colorMode(RGB, 255);
   //fullScreen(P2D, SPAN);
-  size(1600, 1200, P2D);
+  size(1200, 1200, P2D);
   systems = new ArrayList<ParticleSystem>();
   background(0);
   //thread("loadData");
-  if (ready == 1 ) {
-    savedData = loadTable("myData.csv","header");
-    cols = floor(width/scl);
-    rows = floor(height/scl);
-    flowfield = new PVector[(cols+1)*(rows+1)];
-      for (TableRow row : savedData.rows()) {
-          int index   = row.getInt("index");
-          float angle = radians(row.getFloat("deg"));
-          flowfield[index] = PVector.fromAngle(angle);
-          flowfield[index].setMag(1);
-          float speed = row.getFloat("speed");
-          println(speed);
-          flowfield[index].setMag(speed);
-          println(flowfield[index].mag());
-          }
-         ready =2;    
-      }
-}
-
-
-void draw() {  
-  if (ready == 0) {
-  } else 
   //if (ready == 1 ) {
   //  savedData = loadTable("myData.csv","header");
   //  cols = floor(width/scl);
@@ -60,16 +37,39 @@ void draw() {
   //        int index   = row.getInt("index");
   //        float angle = radians(row.getFloat("deg"));
   //        flowfield[index] = PVector.fromAngle(angle);
-  //        flowfield[index].setMag(1);
+  //        //flowfield[index].setMag(1);
   //        float speed = row.getFloat("speed");
   //        println(speed);
-  //        flowfield[index].setMag(speed);
+  //        flowfield[index].setMag(.1*speed);
   //        println(flowfield[index].mag());
   //        }
   //       ready =2;    
   //    }
+}
+
+
+void draw() {  
+  if (ready == 0) {
+  } else 
+  if (ready == 1 ) {
+    savedData = loadTable("myData.csv","header");
+    cols = floor(width/scl);
+    rows = floor(height/scl);
+    flowfield = new PVector[(cols+1)*(rows+1)];
+      for (TableRow row : savedData.rows()) {
+          int index   = row.getInt("index");
+          float angle = radians(row.getFloat("deg"));
+          flowfield[index] = PVector.fromAngle(angle);
+          //flowfield[index].setMag(1);
+          float speed = row.getFloat("speed");
+          println(speed);
+          flowfield[index].setMag(speed*0.01);
+          println(flowfield[index].mag());
+          }
+         ready =2;    
+      }
     if (ready == 2){
-    fill(0, 10);
+    fill(0, 40);
     noStroke();
     rect(0, 0, width, height);
     for (ParticleSystem ps : systems) {
@@ -77,9 +77,9 @@ void draw() {
     }
     
 
-    float locX = random(width);
-    float locY = random(height);
-    systems.add(new ParticleSystem(100, new PVector(locX, locY)));
+    float locX = mercX(random(width));
+    float locY = mercY(random(height));
+    systems.add(new ParticleSystem(400, new PVector(locX, locY)));
     for (int y = 0; y <= rows; y++) {
       for ( int x = 0; x <= cols; x++) {
         int index = x + y * cols;
@@ -88,10 +88,9 @@ void draw() {
           rotate(flowfield[index].heading());
           stroke(255);
           strokeWeight(3);
-          line(0, 0, 10*flowfield[index].mag(), 0);
+          //line(0, 0, 100*flowfield[index].mag(), 0);
           println(flowfield[index].mag());
           popMatrix();
-        
       }
     }
   }
@@ -112,7 +111,7 @@ void loadData() {
   float lon=0;
   for (int y = 0; y <= rows; y++) {
     lat = y;
-    lat = map(lat, 0, rows, -90, 90);
+    lat = map(lat, 0, rows, -90,90);
     for ( int x = 0; x <= cols; x++) {
       TableRow newRow = savedData.addRow();
       int index = x + y*cols;
@@ -138,14 +137,6 @@ void loadData() {
       newRow.setFloat("lon", lon);
       newRow.setFloat("deg", deg);
       newRow.setFloat("speed", speed);
-      //println(index);
-      //stroke(0, 50);
-      //pushMatrix();
-      //translate(x*scl, y*scl);
-      //rotate(v.heading());
-      //stroke(255);
-      //line(0, 0, v.x, v.y);
-      //popMatrix();
     }
   }
   ready = 1;
@@ -167,4 +158,22 @@ void loadData() {
   //  }
   //}
   //}
+}
+
+
+float mercX(float lon) {
+  lon = radians (lon);
+  float a = (256/PI) * pow(2, 1);
+  float b = lon + PI;
+  lon = a * b;
+  return lon;
+}
+
+float mercY(float lat) {
+  lat = radians (lat);
+  float a = (256/PI) * pow(2, 1);
+  float b = (tan ( PI/4+ lat /2 ));
+  float c = PI - log(b);
+
+  return a * c ;
 }
