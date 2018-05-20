@@ -17,7 +17,7 @@ class Particle {
     location     = l.copy();
     location     = new PVector (random(width), random(height));
     prevLocation = location.copy();
-    lifespan     = 150.0;
+    lifespan     = 1500.0;
   }
 
   void run() {
@@ -30,7 +30,6 @@ class Particle {
   void update() {
     prevLocation = location.copy();
     acceleration = force;
-    //acceleration.add(force);
     velocity.add(acceleration);
     //velocity.sub(velocity.normalize());
     //velocity.limit(10);
@@ -57,13 +56,9 @@ class Particle {
       prevLocation = location;
     }
 
-    stroke(255, lifespan);
-    //int d = 10;
-    //stroke(255,25*velocity.mag(),25*velocity.mag(),lifespan);
+    stroke(30*velocity.mag(),30*velocity.mag(),255);
     //stroke(255,25*velocity.x,25*velocity.y,lifespan);
     strokeWeight(3);
-    //fill(96, 186, 215, lifespan);
-    //ellipse(location.x, location.y, d/8, d/8);
     line(location.x, location.y, prevLocation.x, prevLocation.y);
 
     int x     = floor(location.x/scl);
