@@ -1,13 +1,35 @@
 // A simple Particle class
-//SinOsc sine;
 class Particle {
   PVector prevLocation;
   PVector location;
   PVector velocity;
   PVector acceleration;
   PVector force;
-  float   lifespan;
+  float   lifespan = 15;
+  float spanCheck = lifespan;
+  float delay = 3;
   float   m = 5;
+  color c;
+  float maxSpeed = 14;
+  float minSpeed = 7;
+  float ra;
+  float rb;
+  float rc;
+  
+  float ga;
+  float gb;
+  float gc;
+  
+  float ba;
+  float bb;
+  float bc;
+  
+  float cr;
+  float cg;
+  float cb;
+  
+  float mag;
+  
   //color [] randColors = {#69D2E7, #A7DBD8, #E0E4CC, #F38630, #FA6900, #FF4E50, #F9D423};
 
   Particle(PVector l) {
@@ -17,7 +39,6 @@ class Particle {
     location     = l.copy();
     location     = new PVector (random(width), random(height));
     prevLocation = location.copy();
-    lifespan     = 1500.0;
   }
 
   void run() {
@@ -25,16 +46,18 @@ class Particle {
     update();
   }
 
-
   // Method to update location
   void update() {
     prevLocation = location.copy();
     acceleration = force;
     velocity.add(acceleration);
-    //velocity.sub(velocity.normalize());
+    PVector currentVelocity = velocity.copy();
+    currentVelocity.setMag(currentVelocity.mag()*.3);
+    velocity.sub(currentVelocity);
+    //println(velocity.mag());
     //velocity.limit(10);
     location.add(velocity);
-    lifespan -= 5;
+    lifespan -= 1;
   }
 
   // Method to display
@@ -55,12 +78,41 @@ class Particle {
       location.y = height;
       prevLocation = location;
     }
+    
+    
+    // this is where the colour calculations happen
+    // if lifespan is 1-2 less than initial lifespan, i can start printing!
+    if ( spanCheck > lifespan+delay){
+    ra = -72;
+    rb = 216;
+    rc = 105;
+    
+    ga = -54;
+    gb = 58;
+    gc = 209;
+    
+    ba = 95;
+    bb = -285;
+    bc = 230;
+    mag = map(velocity.mag(),minSpeed,maxSpeed,0,2);
 
-    stroke(30*velocity.mag(),30*velocity.mag(),255);
-    //stroke(255,25*velocity.x,25*velocity.y,lifespan);
-    strokeWeight(3);
+    if (mag>2){
+      mag = 2;
+    }
+    else if (mag<0){
+     mag = 0; 
+    }
+    
+    
+    cr = (mag*mag)*ra + mag*rb + rc; if ( cr > 255){cr=255;}
+    cg = (mag*mag)*ga + mag*gb + gc; if ( cg > 255){cg=255;}
+    cb = (mag*mag)*ba + mag*bb + bc; if ( cb > 255){cb=255;}
+    c = color(cr,cg,cb);
+    
+    stroke(c);
+    strokeWeight(1);
     line(location.x, location.y, prevLocation.x, prevLocation.y);
-
+    }
     int x     = floor(location.x/scl);
     int y     = floor(location.y/scl);
     int temp  = cols;
