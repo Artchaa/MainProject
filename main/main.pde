@@ -3,52 +3,65 @@
 
 /*
   Phases to implement:
-  1. sound to be affected by angle of the wind, using a panner class.
-  2. a GUI to control some of the constants.
-  3. a small amount of intentional perlin noise on the current flowfield to make a 
-  windy effect.
-  4. Creating averages based on neighbouring data points.
-  5. 
+ 1. sound to be affected by angle of the wind, using a panner class.
+ 2. a GUI to control some of the constants.
+ 3. a small amount of intentional perlin noise on the current flowfield to make a 
+ windy effect.
+ 4. Creating averages based on neighbouring data points.
+ 5. A loading screen or a system of particles to run randomly for the time being.
+ 6. I had one more!
+ 
+ 
+ */
+import java.util.Iterator;
+import beads.*;
+import controlP5.*;
 
-
-*/
 float size;
-float lifespan;
-int scl = 40;
-int particleCount = 1000;
+//float lifespan;
+int scl = 25;
+//int particleCount = 3000;
 int cols, rows;
 PVector v;
 JSONObject openData;
 PVector [] flowfield;
 ArrayList<ParticleSystem> systems;
-import java.util.Iterator;
-import beads.*;
+
 float xLoc;
 float yLoc;
 // These handles can be used to calculate the size of the output screen as well as the lat lon of the map
-float latStart  =  -10;
-float latStop   =  -40;
-float lonStart  =  110;
-float lonStop   =  160;
-// 0 for grabbing new set of data 1 is for using original data 2 for when data is loaded
+
+float latStart  =  40;
+float latStop   =  0;
+float lonStart  =  30;
+float lonStop   =  70;
+// 0 for grabbing new set of data 1 is for using original data 2 for when data is loade
 int ready = 1;
 Table savedData;
 float backgroundG = 10;
 float alpha = 10;
+boolean soundOutput = false;
 
 AudioContext ac;
 Glide carrierFreq, modFreqRatio;
+Panner panner;
+ControlP5 cp5;
+int ParticleCount = 100;
+Slider abc;
 
 
 
-
+// as screen size changes depending on lat and lon, this is required here instead of setup
 void settings() {
-  int screenX = abs(int(lonStop-lonStart)*40);
+  int screenX = abs(int(lonStop-lonStart)*50);
   int screenY = abs(int(latStop-latStart)*50);
   size(screenX, screenY, P2D);
 }
 
+
+
 void setup() {
+  //From here on it is all about initialising sound system and I understand almost nothing
   ac = new AudioContext();
   carrierFreq = new Glide(ac, 500);
   modFreqRatio = new Glide(ac, 1);
@@ -65,13 +78,48 @@ void setup() {
   };
   WavePlayer wp = new WavePlayer(ac, carrierMod, Buffer.SINE);
   Gain g = new Gain(ac, 1, 0.1);
+  //   This is an unsuccessful attempt to add a panner
+  //// Moving bloops.
+  //    // Create our audio context.
+  //    AudioContext ac = new AudioContext();
+
+  //    // We'll use a nice, simple sine tone.
+  //    WavePlayer sine = new WavePlayer(ac, 220, Buffer.SINE);
+
+  //    // We'll make it bloop-y by multiplying it (using a Gain) by an
+  //    // envelope that is triggered by a Clock.
+  //    final Envelope envelope = new Envelope(ac, 0);
+  //    Gain bloops = new Gain(ac, 1, envelope);
+  //    bloops.addInput(sine);
+
+  //    Clock clock = new Clock(ac, 300);
+  //    clock.setTicksPerBeat(1);
+  //    ac.out.addDependent(clock);
+
+  //    Bead blooper = new Bead() {
+  //      public void messageReceived(Bead message) {
+  //        envelope.addSegment(1, 30);
+  //        envelope.addSegment(.1f, 30);
+  //        envelope.addSegment(0, 60);
+  //      }
+  //    };
+
+
+  //      clock.addMessageListener(blooper);
+  //panner = new Panner(ac);
+  //panner.setPos(-1);
+  //panner.addInput(bloops);
   g.addInput(wp);
   ac.out.addInput(g);
-  ac.start();
+  //ac.out.addInput(panner);
+  if ( soundOutput == true) {
+    ac.start();
+  }
+  // this is where the sound system ends
 
 
 
-
+  // this is only to set up the initial system, nothing should be required to change
   cols = floor(width/scl);
   rows = floor(height/scl);
   flowfield = new PVector[(cols+1)*(rows+1)];
@@ -84,6 +132,18 @@ void setup() {
   if (ready == 0 ) {
     thread("loadData");
   }
+
+  // this part is where I initialise my controller and sliders
+  cp5 = new ControlP5(this);
+  // add a horizontal sliders, the value of this slider will be linked
+  // to variable 'sliderValue' 
+  cp5.addSlider("ParticleCount")
+    .setPosition(width/2, height - 200)
+    .setRange(10, 10000)
+    .setSize(200, 40);
+  //.setValue();
+  ;
+
 }
 
 
@@ -96,7 +156,7 @@ void draw() {
   //Here is where data is captured online, but the code reads it off a file on the computer.
   if (ready == 1 ) 
   {
-    savedData = loadTable("21.05.18 - over australia.csv", "header");
+    savedData = loadTable("24.05.18 - over Middle East.csv", "header");
     for (TableRow row : savedData.rows()) {
       int index   = row.getInt("index");
       float angle = radians(row.getFloat("deg"));
@@ -112,6 +172,7 @@ void draw() {
     //alpha value helps removing the particles faster off the screen
 
     fill(backgroundG, alpha);
+    //fill(sliderValue,alpha);
     noStroke();
     rect(0, 0, width, height);
 
@@ -122,7 +183,7 @@ void draw() {
     for (ParticleSystem ps : systems) {
       ps.run();
     }
-    systems.add(new ParticleSystem(particleCount, new PVector(locX, locY)));
+    systems.add(new ParticleSystem(ParticleCount, new PVector(locX, locY)));
     //this is to override the lines of the flowfield to check as to whether particles are in fact following the wind.
     for (int y = 0; y <= rows; y++) {
       for ( int x = 0; x <= cols; x++) {
@@ -139,23 +200,23 @@ void draw() {
   }
 
   // this is where mouse input is used
+  if (soundOutput == true) {
+    int x     = floor(mouseX/scl);
+    int y     = floor(mouseY/scl);
+    //int temp  = cols;
+    int index = x + y * cols;
+    float  carfreq   = flowfield[index].mag();
+    carfreq = map(carfreq, 0, 17, 0, width);
+    float  modfreq   = (flowfield[index].mag());
+    modfreq = map(modfreq, 0, 17, 0, height);
 
-  int x     = floor(mouseX/scl);
-  int y     = floor(mouseY/scl);
-  int temp  = cols;
-  int index = x + y * temp;
-  float  carfreq   = flowfield[index].mag();
-  carfreq = map(carfreq, 0, 17, 0, width);
-  float  modfreq   = (flowfield[index].heading());
-  modfreq = map(modfreq, -PI, PI, 0, height);
-
-  carrierFreq.setValue(carfreq / width * 1000 + 50);
-  //modFreqRatio.setValue((1 - modfreq / height) * 10 + 0.1); 
-  //println(flowfield[index].heading());
+    carrierFreq.setValue(carfreq / width * 1000 + 50);
+    modFreqRatio.setValue((1 - modfreq / height) * 10 + 0.1);
+  }
 }
 
-void mouseClicked() {
-}
+
+
 
 // This thread will only run if the ready is in state 0 meaning that you are requesting online data.
 void loadData() {
@@ -197,7 +258,7 @@ void loadData() {
   }
   ready = 1;
 
-  saveTable(savedData, "21.05.18 - over australia.csv");
+  saveTable(savedData, "24.05.18 - over Middle East.csv");
 }
 
 

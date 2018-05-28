@@ -5,9 +5,9 @@ class Particle {
   PVector velocity;
   PVector acceleration;
   PVector force;
-  float   lifespan = 15;
+  float   lifespan = 10;
   float spanCheck = lifespan;
-  float delay = 3;
+  float delay = 2;
   float   m = 5;
   color c;
   float maxSpeed = 14;
@@ -15,21 +15,21 @@ class Particle {
   float ra;
   float rb;
   float rc;
-  
+
   float ga;
   float gb;
   float gc;
-  
+
   float ba;
   float bb;
   float bc;
-  
+
   float cr;
   float cg;
   float cb;
-  
+
   float mag;
-  
+
   //color [] randColors = {#69D2E7, #A7DBD8, #E0E4CC, #F38630, #FA6900, #FF4E50, #F9D423};
 
   Particle(PVector l) {
@@ -52,7 +52,7 @@ class Particle {
     acceleration = force;
     velocity.add(acceleration);
     PVector currentVelocity = velocity.copy();
-    currentVelocity.setMag(currentVelocity.mag()*.3);
+    currentVelocity.setMag(currentVelocity.mag()*.35);
     velocity.sub(currentVelocity);
     //println(velocity.mag());
     //velocity.limit(10);
@@ -78,40 +78,48 @@ class Particle {
       location.y = height;
       prevLocation = location;
     }
-    
-    
+
+
     // this is where the colour calculations happen
     // if lifespan is 1-2 less than initial lifespan, i can start printing!
-    if ( spanCheck > lifespan+delay){
-    ra = -72;
-    rb = 216;
-    rc = 105;
-    
-    ga = -54;
-    gb = 58;
-    gc = 209;
-    
-    ba = 95;
-    bb = -285;
-    bc = 230;
-    mag = map(velocity.mag(),minSpeed,maxSpeed,0,2);
+    if ( spanCheck > lifespan+delay) {
+      ra = -72;
+      rb = 216;
+      rc = 105;
 
-    if (mag>2){
-      mag = 2;
-    }
-    else if (mag<0){
-     mag = 0; 
-    }
-    
-    
-    cr = (mag*mag)*ra + mag*rb + rc; if ( cr > 255){cr=255;}
-    cg = (mag*mag)*ga + mag*gb + gc; if ( cg > 255){cg=255;}
-    cb = (mag*mag)*ba + mag*bb + bc; if ( cb > 255){cb=255;}
-    c = color(cr,cg,cb);
-    
-    stroke(c);
-    strokeWeight(1);
-    line(location.x, location.y, prevLocation.x, prevLocation.y);
+      ga = -54;
+      gb = 58;
+      gc = 209;
+
+      ba = 95;
+      bb = -285;
+      bc = 230;
+      mag = map(velocity.mag(), minSpeed, maxSpeed, 0, 2);
+
+      if (mag>2) {
+        mag = 2;
+      } else if (mag<0) {
+        mag = 0;
+      }
+
+
+      cr = (mag*mag)*ra + mag*rb + rc; 
+      if ( cr > 255) {
+        cr=255;
+      }
+      cg = (mag*mag)*ga + mag*gb + gc; 
+      if ( cg > 255) {
+        cg=255;
+      }
+      cb = (mag*mag)*ba + mag*bb + bc; 
+      if ( cb > 255) {
+        cb=255;
+      }
+      c = color(cr, cg, cb);
+
+      stroke(c);
+      strokeWeight(1);
+      line(location.x, location.y, prevLocation.x, prevLocation.y);
     }
     int x     = floor(location.x/scl);
     int y     = floor(location.y/scl);
